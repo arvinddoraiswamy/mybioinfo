@@ -1,0 +1,51 @@
+https://research.cip.cgiar.org/confluence/display/potatogene/What+is+DNA,+a+gene,+a+chromosome+and+a+genome
+    Cell: The smallest unit of the human body that keeps us all alive.
+    DNA: One of the smallest bits (molecules) that are part of the genetic material of every cell of every organism, plant, animal or human.
+    Chromosome: A lot of DNA combined together in the form of a chain is a chromosome. Humans have 46 chromosomes, Bacteria have 1. Each chromosome has something unique to the human.
+    Gene: Smaller areas within a chromosome that contain chracteristics specific to that organism(loosely used) are genes.
+    Genome: A set of all genes of that organism is a genome. Each cell in your body has a complete copy of your genome.
+
+DNA Replication: 
+    -If cells cant replicate, you're dead. So they need to always replicate, all the time.
+    -Cells divide, as a means of reproduction and thus provide functionality to the body's various parts.For example: If a cell in your pancreas divided, the new cell would help the pancreas work just like the old cell did. How the cell works is decided by its DNA.
+    -And hence, logically it makes sense that the DNA in cell 1 needs to get copied to the DNA in cell 2, else cell 2 would not know how to do its thing.
+    -Every cell in our body has a nucleus. When the cell divides the nucleus of each cell has a chromosome. If eventually 10 copies of the first cell are made, all 
+10 cells will have the same DNA in it.
+
+Finding the Origin of Replication (ORI):
+    -To understand more about replication we need to know how cells replicate. Hard in humans. Easier (but not trivial) in bacteria.
+    -Human genome is a string with a defined start and end. Bacterial genome is circular, so there's no end - replication could start anywhere.
+    -A protein called DNAa goes to the cell and triggers the release of an enzyme called DNA polymerase. This is what tells a cell to replicate. And somehow it finds the exact place where it starts this process. This means that there is something inside every string (DNAa box) that identifies the starting point. DNAa goes to each of these places (ORIs) and attaches itself there.
+    -Its hard to identify this. However certain patterns repeat themselves in a genome (straight or circular), so if we can find these patterns, any of those could be the ORI.
+    -So, if we want to identify the ORI, THIS is the problem statement. Find all strings of a pattern X in a string. The pattern that repeats most is the ORI.
+
+Why do we need to find ORI?
+    -Genetic manipulation of organisms/humans. Injecting a gene into an ill person to treat a disease or defend crops against a pesticide. If you don't know where
+     ORI is, you could inject your changes and destroy ORI in that human and infect them even more than they currently are.
+    -Biologically, scientists would just keep shortening the string and when replication no longer occurs, they know they're close to ORI. This can be done much faster using computers.
+
+Recognizing ORI:
+    - kmer: A string of length k
+    - If you find lots of repeating kmers in a genome where k=9, then the one that repeats the most (including its complement (A,T), (C,G)) is most likely the ORI
+    - If these kmers and/or their complements appear in clumps, meaning next to each other it further confirms that this is the hidden message that will cause DNAa
+to start replication. DNAa then triggers release of DNA polymerase as before and replication actually starts.
+    - There's no way though to say that finding clumps in 1 bacteria means that you will find these clumps in every genome of every bacteria. You'd have to test yourcode across the genomes of a number of bacteria.
+    - Infact if you search for the those ORIs in the Thermotoga petrophila genome, it isn't found. This shows that there's no need for ORIs to be found in multiple
+bacterial genomes.
+    - Looks like the best way is to search for 9mers in a genome, find its complement and then see how many times both occur in the genome overall. The more times they appear, the greater the likelihood of it being the ORI for that genome. Once you find the ORI, you can try and do something to it to prevent it from replicating.
+
+How does DNA replicate? (Meselson Stahl experiment)
+    The parent had N15. Then it replicated using one of the 3 means (Conservative, Semi or Diverse). At this point I had a question though. Where does the daughter strand pick up its nitrogen from? The parent? Or the environment? If its the parent, the daughter will keep getting N15 all the time until it is exhausted and then there would be no more replication. But this is not true, since as long as the organism is alive, replication keeps happening.
+
+    That means the replication is from the environment. The parent originally had N15. If then:
+    - Semi-conservative: The daughter would have 1 strand N14 and 1 strand (from parent) as N15
+    - Conservative: The daughter would have both strands as N14
+    - Diverse: The daughter would have a mix of N14 and N15
+
+    By looking at how replication happened once the EColi was put into N14, they'd be able to find how replication happened - https://www.youtube.com/watch?v=3RQfSdTrIIk. Apparently, you can separate newly created strands using a centrifuge and find their density out (genes_per_basepair) whatever that means.
+
+Direction:
+    - A sugar molecule has 5 carbon atoms. It is attached at its 5 carbon atom to the phosphate and then to hydroxyl group at its 3 end. (NOT CLEAR). When reading a DNA strand though, read it 5 to 3.
+
+Question:
+    -Each chromosome has DNA. Hence does a human at least have 46 ORIc's?
