@@ -1,7 +1,7 @@
 https://research.cip.cgiar.org/confluence/display/potatogene/What+is+DNA,+a+gene,+a+chromosome+and+a+genome
     Cell: The smallest unit of the human body that keeps us all alive.
     DNA: One of the smallest bits (molecules) that are part of the genetic material of every cell of every organism, plant, animal or human.
-    Chromosome: A lot of DNA combined together in the form of a chain is a chromosome. Humans have 46 chromosomes, Bacteria have 1. Each chromosome has something unique to the human.
+    Chromosome: A lot of DNA combined together in the form of a chain is a chromosome. Humans have 46 chromosomes, Bacteria have 1. Each chromosome has something unique to the human. Each chromosome has DNA, the entire genome is spread around all the chromosomes.
     Gene: Smaller areas within a chromosome that contain chracteristics specific to that organism(loosely used) are genes.
     Genome: A set of all genes of that organism is a genome. Each cell in your body has a complete copy of your genome.
 
@@ -47,5 +47,15 @@ How does DNA replicate? (Meselson Stahl experiment)
 Direction:
     - A sugar molecule has 5 carbon atoms. It is attached at its 5 carbon atom to the phosphate and then to hydroxyl group at its 3 end. (NOT CLEAR). When reading a DNA strand though, read it 5 to 3.
 
-Question:
-    -Each chromosome has DNA. Hence does a human at least have 46 ORIc's?
+Detailed DNA replication:
+    - Double helix. Semi conservative. Daughter strand has 1 parent strand and 1 of their own strands.
+    - Enzyme generated. DNA forms a replication fork. Then RNA attaches a primer at ORI to leading and lagging strands. DNA polymerase attaches itself to the primer.
+    - Replication starts from 5end towards 3end on both strands. Direction is opposite in both though since 5end is at opposite ends in the leading and the
+      lagging strand.
+    - However this takes care of only half of the strands, in both leading and lagging.
+    - The remaining half is handled differently. Once replication starts in 1 direction, a small part of the strand that remains, is replicated (Okazaki fragments).
+      This is the forward strand that cannot replicate on its own and has to wait as the reverse strand works. Multiple such primers attach themselves to the
+      forward strands and replicate the forward strand bit by bit. This happens on both strands.
+    - Only 1 primer is needed for the reverse strand, but multiple primers are needed for the forward strand.
+    - Eventually DNA Ligase is generated, joins everything in the daughter and you have a new replicated genome in a new cell.
+    - Look at the Youtube video - DNA replication - 3D.mp3. It is very good.

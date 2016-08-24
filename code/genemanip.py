@@ -1,15 +1,80 @@
 '''
+Get minimum count from a pre-created skew array for a given genome and specific patterns
+'''
+def min_skew_array(genome, pattern1, pattern2):
+    positions= []
+    skew= get_skew_array(genome, pattern1, pattern2)
+    min_value= min(skew.values())
+    sorted_skew= sorted(skew.items(), key=lambda x: x[1])
+    positions= [tempvar_1[0] for tempvar_1 in sorted_skew if tempvar_1[1] == min_value]
+    return positions
+
+'''
+Get skew array for a given genome and a couple of specific patterns
+'''
+def get_skew_array(genome, pattern1, pattern2):
+    temp_var1= list(genome)
+    pattern1= pattern1.lower()
+    pattern2= pattern2.lower()
+    skew_count= 0
+    skew= {}
+    skew[skew_count]= 0
+    for count, char in enumerate(temp_var1, start=1):
+        char= char.lower()
+        if char == pattern1:
+            skew_count -= 1
+            skew[count]= skew_count
+        elif char == pattern2:
+            skew_count += 1
+            skew[count]= skew_count
+        else:
+            skew[count]= skew_count
+
+    return skew
+
+'''
+Search for a single nucleotide
+'''
+def search_for_pattern(genome, pattern):
+    pattern_map = {}
+    genome= genome.lower()
+    pattern= pattern.lower()
+    original_len_genome= len(genome)
+    count= 0
+
+    #First do some work on the first half of the genome. Once done, add it to the end and do the rest of the stuff.
+    first_half_genome= genome[0:(original_len_genome/2)]
+    for char in list(first_half_genome):
+        if char == pattern:
+            count += 1
+        else:
+            continue
+    pattern_map[0]= count
+
+    #Start work by sliding windows bit by bit
+    window_start= 1
+    window_end= original_len_genome/2
+    genome= genome + first_half_genome
+
+    while window_start < original_len_genome: 
+        if genome[window_start-1] == pattern and count != 0:
+            count -= 1
+        if genome[window_end] == pattern:
+            count += 1
+
+        pattern_map[window_start] = count
+        window_start += 1
+        window_end   += 1
+
+    return pattern_map
+        
+'''
 This is a simple utility function that takes a file as an input and returns a list of strings that can then be worked upon.
 '''
 def openfile(filename):
-    file_content= []
     with open(filename) as f:
-        tempvar_1= f.readlines()
-
-    for string in tempvar_1:
-        file_content.append(string)
-
-    return file_content
+        genome= f.read()
+    return genome
 
 '''
 This function takes a genome as an input and finds the most frequent pattern of a specific length in it.
@@ -46,7 +111,7 @@ This gets all the offsets for a specific pattern.
 '''
 def find_offsets_for_pattern(all_kmers, pattern):
     offsets= []
-    all_kmers= find_oris(pattern, genome)
+    all_kmers= find_kmers_in_genome(genome, len(pattern))
     positions= [offset for offset, kmer in enumerate(all_kmers) if pattern == kmer]
         
     return positions
@@ -69,3 +134,4 @@ def reverse_complement(pattern):
     comp= complement(pattern)
     rev_comp= ''.join(comp)[::-1].upper()
     return rev_comp
+
