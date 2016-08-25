@@ -1,3 +1,6 @@
+Write one single tool that will attempt to do a lot of fancy things and find ori in the system.
+-----------------------------------------------------------------------------------------------
+
 https://research.cip.cgiar.org/confluence/display/potatogene/What+is+DNA,+a+gene,+a+chromosome+and+a+genome
     Cell: The smallest unit of the human body that keeps us all alive.
     DNA: One of the smallest bits (molecules) that are part of the genetic material of every cell of every organism, plant, animal or human.
@@ -53,9 +56,21 @@ Detailed DNA replication:
     - Replication starts from 5end towards 3end on both strands. Direction is opposite in both though since 5end is at opposite ends in the leading and the
       lagging strand.
     - However this takes care of only half of the strands, in both leading and lagging.
+    - Also remember that this process is completely asymmetric
     - The remaining half is handled differently. Once replication starts in 1 direction, a small part of the strand that remains, is replicated (Okazaki fragments).
-      This is the forward strand that cannot replicate on its own and has to wait as the reverse strand works. Multiple such primers attach themselves to the
-      forward strands and replicate the forward strand bit by bit. This happens on both strands.
+      This is the forward strand that cannot replicate on its own and has to wait as the reverse strand works. Multiple such primers (DNA Polymerase) attach themselves to the forward strands and replicate the forward strand bit by bit. This happens on both strands.
     - Only 1 primer is needed for the reverse strand, but multiple primers are needed for the forward strand.
     - Eventually DNA Ligase is generated, joins everything in the daughter and you have a new replicated genome in a new cell.
     - Look at the Youtube video - DNA replication - 3D.mp3. It is very good.
+    ** NOTE: A forward parent half-strand synthesizes a reverse daughter half-strand **
+
+More details about the 2 halves of a DNA strand
+    - The reverse strand quickly replicates so its almost always double stranded, unlike the forward strand which is single stranded.
+    - Single stranded = more mutation. C changes to T. And so on. Meaning some funny combinations are formed and some nucleotides are more or less on the forward strands. Hence since lots of C becomes T, there's less C on the forward strand.
+    - C_reverse > C_Forward, G_reverse < G_forward, A & T similar on both strands
+    - Use this to split the genome into chunks of 500 nucleotides at a time and find the chunk that has the least C. This'll mean we've found the forward strand and hence ORI lies somewhere really nearby. Plot a graph of number of C's vs position
+    - More accurate way is to track G-C on both strands. On the reverse strand G-C will decrease, on the forward G-C will increase. The transition point is ORI.
+    - Plot a graph of the values of (G-C) vs position. This is a "skew array" graph and it'll look very similar to the window graph that we plotted earlier, just that it is more accurate
+    - The place where G-C is the smallest is the approximate location of ori
+    - Now you identify all 9mers in and around that window along with its reverse complements. This is so you can find the actual DNAa box (exact pattern) that triggers the replication. Even if there's slight differences (1 nucleotide) in patterns, that's fine, it could still be the correct pattern since imperfect matches are alsopossible.
+    - Sometimes you can find lots of kmers that all have multiple matches and any of these could be ORIs. But this is still better than the brute force approach that biologists would have to perform without if they did not have programs to help them identify at least a set of ORIs. At this point biologists can go back to hte brute force approach of cutting off the genome at each of the set of the ORIs that the programmers identified.

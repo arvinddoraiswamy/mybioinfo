@@ -1,4 +1,35 @@
 '''
+Get approximate matches for a specific pattern in a genome. The number of differences should not be greater than max_number_of_mismatches
+'''
+def approximate_match(genome, pattern, max_number_of_mismatches):
+    positions= []
+    all_kmers= find_kmers_in_genome(genome, len(pattern))
+    for offset,kmer in enumerate(all_kmers):
+        distance= hamming_distance(kmer, pattern)
+        if distance <= max_number_of_mismatches:
+            positions.append(offset)
+        else:
+            continue
+
+    return positions
+
+'''
+Get hamming distance between 2 strings
+'''
+def hamming_distance(string1, string2):
+    tempvar_1= list(string1)
+    tempvar_2= list(string2)
+
+    distance= 0
+    for count, char in enumerate(tempvar_1):
+        if char != tempvar_2[count]:
+            distance += 1
+        else:
+            continue
+
+    return distance
+
+'''
 Get minimum count from a pre-created skew array for a given genome and specific patterns
 '''
 def min_skew_array(genome, pattern1, pattern2):
@@ -77,21 +108,19 @@ def openfile(filename):
     return genome
 
 '''
-This function takes a genome as an input and finds the most frequent pattern of a specific length in it.
+This function takes a genome as an input and returns all patterns of a specific length in it.
 '''
 def find_kmers_in_genome(genome, k):
     all_kmers= []
-    unique_kmers= []
-    kmer_map= {}
-
     len_kmer= k
     len_genome= len(genome)
     len_diff= len_genome - len_kmer + 1
-    all_kmers= [string[i:i+len_kmer] for i in range(0, len_diff)]
+
+    all_kmers= [genome[i:i+len_kmer] for i in range(0, len_diff)]
     return all_kmers
 
 '''
-This takes a bunch of kmers and searches for the most frequent one.
+This takes a bunch of kmers of a certain length and searches for the most frequent one.
 '''
 def get_most_freq_kmer(all_kmers):
     for kmer in all_kmers:
@@ -107,7 +136,7 @@ def get_most_freq_kmer(all_kmers):
     return kmer_most_freq_key
 
 '''
-This gets all the offsets for a specific pattern.
+This gets all the offsets for a specific pattern in a genome.
 '''
 def find_offsets_for_pattern(all_kmers, pattern):
     offsets= []
