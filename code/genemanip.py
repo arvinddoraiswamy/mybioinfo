@@ -1,3 +1,25 @@
+#Everything below this was all up until Week3
+'''
+Given a string of motifs extracted from a gene identify the number of A,G,C,T in each column and generate a matrix with those numbers as a dictionary
+'''
+def generate_count_matrix(motifs):
+    symbols=['A','C','G','T']
+    count  ={}
+    len_each_motif= len(motifs[0])
+
+    for symbol in symbols:
+        count[symbol]= []
+        for symbol_cell in range(len_each_motif):
+            count[symbol].append(0)
+
+    for motif in motifs:
+        tempvar_2= list(motif)
+        for offset in range(len(tempvar_2)):
+            count[tempvar_2[offset]][offset] += 1
+
+    return count
+
+#Everything below this was all up until Week2
 '''
 Get approximate matches for a specific pattern in a genome. The number of differences should not be greater than max_number_of_mismatches
 '''
@@ -99,6 +121,7 @@ def search_for_pattern(genome, pattern):
 
     return pattern_map
         
+#Everything below this was all up until Week1
 '''
 This is a simple utility function that takes a file as an input and returns a list of strings that can then be worked upon.
 '''
