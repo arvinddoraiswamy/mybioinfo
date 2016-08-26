@@ -1,3 +1,4 @@
+from __future__ import division
 #Everything below this was all up until Week3
 '''
 Given a string of motifs extracted from a gene identify the number of A,G,C,T in each column and generate a matrix with those numbers as a dictionary
@@ -18,6 +19,24 @@ def generate_count_matrix(motifs):
             count[tempvar_2[offset]][offset] += 1
 
     return count
+
+def generate_profile_matrix(motifs):
+    no_of_motifs= len(motifs)
+    len_each_motif= len(motifs[0])
+    symbols=['A','C','G','T']
+    profile= {}
+
+    for symbol in symbols:
+        profile[symbol]= []
+        for symbol_cell in range(len_each_motif):
+            profile[symbol].append(0)
+
+    count_matrix= generate_count_matrix(motifs)
+    for symbol,nucleotide_count_list in count_matrix.items():
+        for symbol_count in range(len(nucleotide_count_list)):
+            profile[symbol][symbol_count]= count_matrix[symbol][symbol_count] / no_of_motifs
+
+    return profile
 
 #Everything below this was all up until Week2
 '''
