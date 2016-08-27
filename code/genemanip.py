@@ -38,6 +38,24 @@ def generate_profile_matrix(motifs):
 
     return profile
 
+def consensus(motifs):
+    count_matrix= generate_count_matrix(motifs)
+    len_each_motif= len(motifs[0])
+    symbols=['A','C','G','T']
+
+    t1= 0
+    possible_motif= ''
+    for position in range(len_each_motif):
+        t1= 0
+        t2= ''
+        for symbol in symbols:
+            if count_matrix[symbol][position] > t1:
+                t1= count_matrix[symbol][position] 
+                t2= symbol
+        possible_motif += t2
+
+    return possible_motif
+
 #Everything below this was all up until Week2
 '''
 Get approximate matches for a specific pattern in a genome. The number of differences should not be greater than max_number_of_mismatches
