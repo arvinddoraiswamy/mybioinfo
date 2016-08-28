@@ -44,7 +44,7 @@ def consensus(motifs):
     symbols=['A','C','G','T']
 
     t1= 0
-    possible_motif= ''
+    predicted_motif= ''
     for position in range(len_each_motif):
         t1= 0
         t2= ''
@@ -52,9 +52,21 @@ def consensus(motifs):
             if count_matrix[symbol][position] > t1:
                 t1= count_matrix[symbol][position] 
                 t2= symbol
-        possible_motif += t2
+        predicted_motif += t2
 
-    return possible_motif
+    return predicted_motif
+
+def score(motifs):
+    predicted_motif= consensus(motifs)
+    score= 0
+    for offset in range(0, len(motifs[0])):
+        for motifnum in range(0, len(motifs)):
+            if motifs[motifnum][offset] != predicted_motif[offset]:
+                score += 1
+            else:
+                continue
+
+    return score
 
 #Everything below this was all up until Week2
 '''
