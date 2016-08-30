@@ -1,7 +1,7 @@
 from __future__ import division
 #Everything below this was all up until Week3
 '''
-Given a string of motifs extracted from a gene identify the number of A,G,C,T in each column and generate a matrix with those numbers as a dictionary
+Given a string of motifs extracted from a gene identify the number of A,G,C,T in each column and generate a matrix with those numbers as a dictionary of lists. Each entry in the list is a column.
 '''
 def generate_count_matrix(motifs):
     symbols=['A','C','G','T']
@@ -20,6 +20,9 @@ def generate_count_matrix(motifs):
 
     return count
 
+'''
+Given a count matrix, find out how much A,C,G and T occur in each column. Each column must add up to 1.
+'''
 def generate_profile_matrix(motifs):
     no_of_motifs= len(motifs)
     len_each_motif= len(motifs[0])
@@ -38,6 +41,10 @@ def generate_profile_matrix(motifs):
 
     return profile
 
+'''
+Which of A,C,G or T appeared the most in each column? Extract just that one nucleotide from each column. Join them all to get one of the
+most likely consensuses. It is possible that there are multiple valid answers here if 2 nucleotides in a column have the same count.
+'''
 def consensus(motifs):
     count_matrix= generate_count_matrix(motifs)
     len_each_motif= len(motifs[0])
@@ -56,6 +63,9 @@ def consensus(motifs):
 
     return predicted_motif
 
+'''
+The consensus gives you the most_likely nucleotide per column. This function looks down the rest of the column and identifies the entries that do not match. This is repeated for_all_columns and for_all_genes, incrementing the score for each non match.
+'''
 def score(motifs):
     predicted_motif= consensus(motifs)
     score= 0
@@ -67,6 +77,85 @@ def score(motifs):
                 continue
 
     return score
+
+'''
+Given a profile and a target motif what is the probability that this motif is the one that actually exists in a genome.
+'''
+def get_probability_motif(target_motif, profile):
+    probability= []
+    print target_motif
+    for position in range(len(profile['A'])):
+        if target_motif[position] in profile.keys():
+            probability.append(profile[target_motif[position]][position])
+            print target_motif[position], probability
+        else:
+            continue
+
+    final_value= probability[0]
+    for position in range(1,len(probability)):
+        final_value *= probability[position]
+    return final_value
+
+'''
+Given a list of genomes, kmer length and a profile, identify what the most likely motif is. In other words, you calculate a number of
+probabilities and choose the one with the highest value.
+'''
+def get_most_probable_motif(genome, kmer_length, profile):
+    all_kmers= find_kmers_in_genome(genome, kmer_length)
+    all_probabilities= {}
+    existing_values_list= []
+
+    for kmer in all_kmers:
+        value= get_probability_motif(kmer, profile)
+        if value not in existing_values_list:
+            existing_values_list.append(value)
+            if kmer not in all_probabilities:
+                all_probabilities[kmer]= value
+
+    sorted_probs= sorted(all_probabilities.items(), key=lambda x: x[1])
+    return sorted_probs[-1][0]
+
+'''
+'''
+def greedysearch(motifs, kmer_length, no_of_motifs):
+    #Get the first kmer-length strings of all the motifs. These are the starting best motifs before we do any analysis. This is what will get updated as we move
+    #through the string.
+    best_motifs= []
+    for motif_num in range(no_of_motifs):
+        best_motifs.append(motifs[motif_num][0:kmer_length])
+
+    #Get all the kmers of kmer length from the first motif
+    all_kmers= find_kmers_in_genome(motifs[0], kmer_length)
+
+    #Iterate through each kmer
+    for kmer_num,kmer in enumerate(all_kmers):
+        current_motif= []
+        current_motif.append(kmer)
+
+        #Goes over all the DNA strings and adds to the list, each time calculating profiles and then the probability of that profile in the next string.
+        for j in range(1, no_of_motifs):
+            profile = generate_profile_matrix(current_motif[0:j])
+            current_motif.append(get_most_probable_motif(motifs[j], kmer_length, profile))
+        if score(current_motif) < score(best_motifs):
+            best_motifs = current_motif
+
+    return best_motifs
+
+import math
+def calculate_entropy(profile):
+    len_each_motif= len(profile['A'])
+    symbols=['A','C','G','T']
+    logarithm_base= 2
+    values= []
+    for position in range(len_each_motif):
+        for symbol in symbols:
+            if profile[symbol][position] != 0.0:
+                values.append(profile[symbol][position] * math.log(profile[symbol][position], logarithm_base))
+            else:
+                values.append(0.0)
+
+    entropy= abs(sum(values))
+    return entropy
 
 #Everything below this was all up until Week2
 '''
