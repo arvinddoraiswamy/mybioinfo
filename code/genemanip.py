@@ -3,6 +3,30 @@ import itertools
 
 #Everything below this was all up until Week4
 '''
+The new profile matrix needs to be generated from the pseudocount matrix. Ensure that you calculate the correct per_column_totals before calculating profiles. The sum total of each column must always be 1, remember - hence the adjustment.
+'''
+def generate_profile_matrix_with_pseudocounts(motifs):
+    len_each_motif= len(motifs[0])
+    no_of_motifs= len(motifs)
+    symbols=['A','C','G','T']
+    profile= {}
+
+    for symbol in symbols:
+        profile[symbol]= []
+        for symbol_cell in range(len_each_motif):
+            profile[symbol].append(0)
+
+    count_matrix= generate_count_matrix_with_pseudocounts(motifs)
+    total= []
+    total = [ sum(col) for col in itertools.izip_longest(*count_matrix.values(), fillvalue=0) ]
+
+    for symbol,nucleotide_count_list in count_matrix.items():
+        for symbol_count in range(len(nucleotide_count_list)):
+            profile[symbol][symbol_count]= count_matrix[symbol][symbol_count] / total[symbol_count]
+
+    return profile
+
+'''
 If any of the cells in the count matrix have a 0 in them, then any guessed motifs despite being really close could get rejected. So we increment each cell by 1 so nothing is ever 0.
 '''
 def generate_count_matrix_with_pseudocounts(motifs):
@@ -27,30 +51,6 @@ def generate_count_matrix_with_pseudocounts(motifs):
             final[key].append(value+1)
 
     return final
-
-'''
-The new profile matrix needs to be generated from the pseudocount matrix. Ensure that you calculate the correct per_column_totals before calculating profiles. The sum total of each column must always be 1, remember - hence the adjustment.
-'''
-def generate_profile_matrix_with_pseudocounts(motifs):
-    len_each_motif= len(motifs[0])
-    no_of_motifs= len(motifs)
-    symbols=['A','C','G','T']
-    profile= {}
-
-    for symbol in symbols:
-        profile[symbol]= []
-        for symbol_cell in range(len_each_motif):
-            profile[symbol].append(0)
-
-    count_matrix= generate_count_matrix_with_pseudocounts(motifs)
-    total= []
-    total = [ sum(col) for col in itertools.izip_longest(*count_matrix.values(), fillvalue=0) ]
-
-    for symbol,nucleotide_count_list in count_matrix.items():
-        for symbol_count in range(len(nucleotide_count_list)):
-            profile[symbol][symbol_count]= count_matrix[symbol][symbol_count] / total[symbol_count]
-
-    return profile
 
 #Everything below this was all up until Week3
 '''
@@ -169,6 +169,7 @@ def get_most_probable_motif(genome, kmer_length, profile):
     return sorted_probs[-1][0]
 
 '''
+The basic idea of the greedy search is that you want to find a series of motifs (1 per string of DNA) that resembles all the others. Use the first motif as the fixed set. For each kmer in the first motif, go through all the other kmers in all the other DNA strings and find 1 string that matches the first one the most. Once you finish going through all the DNA strings, score the entire set. Now go to the next kmer in the first set and repeat this process. Compare the score of all the sets at the end. The "set" with the best score wins. Meaning, for each string of DNA that string was the most likely to be the motif.
 '''
 def greedysearch(motifs, kmer_length, no_of_motifs):
     #Get the first kmer-length strings of all the motifs. These are the starting best motifs before we do any analysis. This is what will get updated as we move
