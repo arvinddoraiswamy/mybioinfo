@@ -1,4 +1,57 @@
 from __future__ import division
+import itertools
+
+#Everything below this was all up until Week4
+'''
+If any of the cells in the count matrix have a 0 in them, then any guessed motifs despite being really close could get rejected. So we increment each cell by 1 so nothing is ever 0.
+'''
+def generate_count_matrix_with_pseudocounts(motifs):
+    symbols=['A','C','G','T']
+    count  ={}
+    final= {}
+    len_each_motif= len(motifs[0])
+
+    for symbol in symbols:
+        count[symbol]= []
+        for symbol_cell in range(len_each_motif):
+            count[symbol].append(0)
+
+    for motif in motifs:
+        tempvar_2= list(motif)
+        for offset in range(len(tempvar_2)):
+            count[tempvar_2[offset]][offset] += 1
+
+    for key,value_list in count.items():
+        final[key]= []
+        for value in value_list:
+            final[key].append(value+1)
+
+    return final
+
+'''
+The new profile matrix needs to be generated from the pseudocount matrix. Ensure that you calculate the correct per_column_totals before calculating profiles. The sum total of each column must always be 1, remember - hence the adjustment.
+'''
+def generate_profile_matrix_with_pseudocounts(motifs):
+    len_each_motif= len(motifs[0])
+    no_of_motifs= len(motifs)
+    symbols=['A','C','G','T']
+    profile= {}
+
+    for symbol in symbols:
+        profile[symbol]= []
+        for symbol_cell in range(len_each_motif):
+            profile[symbol].append(0)
+
+    count_matrix= generate_count_matrix_with_pseudocounts(motifs)
+    total= []
+    total = [ sum(col) for col in itertools.izip_longest(*count_matrix.values(), fillvalue=0) ]
+
+    for symbol,nucleotide_count_list in count_matrix.items():
+        for symbol_count in range(len(nucleotide_count_list)):
+            profile[symbol][symbol_count]= count_matrix[symbol][symbol_count] / total[symbol_count]
+
+    return profile
+
 #Everything below this was all up until Week3
 '''
 Given a string of motifs extracted from a gene identify the number of A,G,C,T in each column and generate a matrix with those numbers as a dictionary of lists. Each entry in the list is a column.
