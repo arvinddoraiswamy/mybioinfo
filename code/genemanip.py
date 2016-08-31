@@ -3,6 +3,36 @@ import itertools
 
 #Everything below this was all up until Week4
 '''
+The basic idea of the greedy search is that you want to find a series of motifs (1 per string of DNA) that resembles all the others. Use the first motif as the fixed set. For each kmer in the first motif, go through all the other kmers in all the other DNA strings and find 1 string that matches the first one the most. Once you finish going through all the DNA strings, score the entire set. Now go to the next kmer in the first set and repeat this process. Compare the score of all the sets at the end. The "set" with the best score wins. Meaning, for each string of DNA that string was the most likely to be the motif.
+'''
+def greedysearch_with_pseudocounts(motifs, kmer_length, no_of_motifs):
+    #Get the first kmer-length strings of all the motifs. These are the starting best motifs before we do any analysis. This is what will get updated as we move
+    #through the string.
+    best_motifs= []
+    for motif_num in range(no_of_motifs):
+        best_motifs.append(motifs[motif_num][0:kmer_length])
+
+    #Get all the kmers of kmer length from the first motif
+    all_kmers= find_kmers_in_genome(motifs[0], kmer_length)
+
+    #Iterate through each kmer
+    for kmer_num,kmer in enumerate(all_kmers):
+        #Set each kmer from the first DNA string to be current. It is against this that you score all the other kmers from all the other DNA strings.
+        current_motif= []
+        current_motif.append(kmer)
+
+        #Goes over all the DNA strings, finding the kmer_per_string that matches the kmer from the first string. This creates a complete set which is then scored.
+        for j in range(1, no_of_motifs):
+            profile = generate_profile_matrix_with_pseudocounts(current_motif[0:j])
+            current_motif.append(get_most_probable_motif(motifs[j], kmer_length, profile))
+
+        #If the score for the current motif is better, it becomes the new 'preferred set' and we move on to the next kmer from the first set after this.
+        if score(current_motif) < score(best_motifs):
+            best_motifs = current_motif
+
+    return best_motifs
+
+'''
 The new profile matrix needs to be generated from the pseudocount matrix. Ensure that you calculate the correct per_column_totals before calculating profiles. The sum total of each column must always be 1, remember - hence the adjustment.
 '''
 def generate_profile_matrix_with_pseudocounts(motifs):
@@ -136,11 +166,9 @@ Given a profile and a target motif what is the probability that this motif is th
 '''
 def get_probability_motif(target_motif, profile):
     probability= []
-    print target_motif
     for position in range(len(profile['A'])):
         if target_motif[position] in profile.keys():
             probability.append(profile[target_motif[position]][position])
-            print target_motif[position], probability
         else:
             continue
 
