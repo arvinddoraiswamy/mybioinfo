@@ -1,7 +1,28 @@
 from __future__ import division
 import itertools
+import random
+import math
 
 #Everything below this was all up until Week4
+'''
+Given a set of DNA strings and a kmer length, choose a random string of length kmer_length from each of the strings and store those
+'''
+def get_random_kmer_from_dna(dna, kmer_length, no_of_motifs):
+    random_kmer= []
+    for each_string in dna:
+        offset= random.randint(1, len(each_string) - kmer_length)
+        random_kmer.append(each_string[offset:offset+kmer_length])
+    return random_kmer
+
+'''
+Given a preset profile and a bunch of Dna strings we start building towards implementing the RandomizedSearchAlgorithm.
+'''
+def get_most_probable_kmers_from_profile(profile, dna):
+    most_probable_kmers= []
+    for each_string in dna:
+        most_probable_kmers.append(get_most_probable_motif(each_string, len(profile['A']), profile))
+    return most_probable_kmers
+
 '''
 The basic idea of the greedy search is that you want to find a series of motifs (1 per string of DNA) that resembles all the others. Use the first motif as the fixed set. For each kmer in the first motif, go through all the other kmers in all the other DNA strings and find 1 string that matches the first one the most. Once you finish going through all the DNA strings, score the entire set. Now go to the next kmer in the first set and repeat this process. Compare the score of all the sets at the end. The "set" with the best score wins. Meaning, for each string of DNA that string was the most likely to be the motif.
 '''
@@ -223,7 +244,6 @@ def greedysearch(motifs, kmer_length, no_of_motifs):
 
     return best_motifs
 
-import math
 def calculate_entropy(profile):
     len_each_motif= len(profile['A'])
     symbols=['A','C','G','T']
