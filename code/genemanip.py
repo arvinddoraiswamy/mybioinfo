@@ -5,6 +5,30 @@ import math
 
 #Everything below this was all up until Week4
 '''
+This uses the 2 functions below to try and choose the best motif for each DNA string. It then uses this list as an input to the profile function and calculates its profile. Then it uses this profile to find the most probable kmers. It scores this new list against the best motif list we chose at the start. The moment the new list has a worse score than the previous list, we stop the search. If we don't the program will never end. 
+'''
+def randomized_motif_search(dna, kmer_length, no_of_motifs, no_of_iterations):
+    count= 0
+
+    #Randomly select a string of a certain length from random offsets in every string. Set this set of randomly chosen strings to be the Best Motif
+    current_motif= get_random_kmer_from_dna(dna, kmer_length, no_of_motifs)
+    best_motifs= current_motif
+
+    while count < no_of_iterations:
+        #Generate a profile matrix for the randomly selected kmers
+        profile= generate_profile_matrix_with_pseudocounts(current_motif)
+
+        #Use this profile to select a new set of most probable kmers from DNA
+        current_motif= get_most_probable_kmers_from_profile(profile, dna)
+
+        #The lower the score, the better the motif is, since score is a result of all the mismatches and you want more matches
+        if score(current_motif) < score(best_motifs):
+            best_motifs= current_motif
+        else:
+            return best_motifs
+        count += 1
+
+'''
 Given a set of DNA strings and a kmer length, choose a random string of length kmer_length from each of the strings and store those
 '''
 def get_random_kmer_from_dna(dna, kmer_length, no_of_motifs):
