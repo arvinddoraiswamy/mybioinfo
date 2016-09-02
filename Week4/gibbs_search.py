@@ -9,10 +9,10 @@ sys.path.insert(0, module_folder)
 import genemanip
 
 if __name__ == "__main__":
-    filename= 'DosR.txt'
+    filename= 'motifs.txt'
     dna= genemanip.openfile(filename).splitlines()
-    kmer_length= 15
+    kmer_length= 8
+    no_of_motifs= len(dna)
     no_of_iterations= 100
-    final= genemanip.randomized_motif_search(dna, kmer_length, len(dna), no_of_iterations)
-    print final
-    print genemanip.score(final)
+    best_motifs= genemanip.gibbs_search(dna, kmer_length, no_of_motifs, no_of_iterations)
+    print best_motifs

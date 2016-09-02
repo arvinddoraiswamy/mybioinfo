@@ -9,10 +9,6 @@ sys.path.insert(0, module_folder)
 import genemanip
 
 if __name__ == "__main__":
-    filename= 'DosR.txt'
-    dna= genemanip.openfile(filename).splitlines()
-    kmer_length= 15
-    no_of_iterations= 100
-    final= genemanip.randomized_motif_search(dna, kmer_length, len(dna), no_of_iterations)
-    print final
-    print genemanip.score(final)
+    probabilities= {'A': 0.2, 'C': 0.3, 'G': 0.4, 'T': 0.1}
+    key= genemanip.weighted_die(probabilities)
+    print key

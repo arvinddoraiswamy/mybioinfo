@@ -9,6 +9,6 @@ sys.path.insert(0, module_folder)
 import genemanip
 
 if __name__ == "__main__":
-    filename= 'motifs.txt'
-    motifs= genemanip.openfile(filename)
-    print genemanip.generate_count_matrix(motifs.splitlines())
+    probabilities= {'A': 0.1, 'C': 0.1, 'G': 0.1, 'T': 0.1}
+    normalized_probabilities= genemanip.normalize(probabilities)
+    print normalized_probabilities

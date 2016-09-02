@@ -2,8 +2,80 @@ from __future__ import division
 import itertools
 import random
 import math
+import operator
 
 #Everything below this was all up until Week4
+'''
+This is the main algorithm that searches for a motif using the Gibbs Sampling method. It uses all the other functions developed during Week4 as under.
+'''
+def gibbs_search(dna, kmer_length, no_of_motifs, no_of_iterations):
+    count= 0
+
+    #Randomly select a string of a certain length from random offsets in every string. Set this set of randomly chosen strings to be the Best Motif
+    current_motif= get_random_kmer_from_dna(dna, kmer_length, no_of_motifs)
+    best_motifs= current_motif
+
+    #Repeat this so many times, hopefully getting the right answer eventually
+    while count < no_of_iterations:
+        probabilities= {}
+        random_num= random.randint(0, no_of_motifs-1)
+        del(current_motif[random_num])
+
+        #Generate a profile matrix for the randomly selected kmers without one string - the one you randomly chose a little while ago
+        profile= generate_profile_matrix_with_pseudocounts(current_motif)
+
+        #Profile just the single, randomly deleted string separately against the calculated profile
+        all_kmers= find_kmers_in_genome(dna[random_num], kmer_length)
+        for kmer in all_kmers:
+            probabilities[kmer]= get_probability_motif(kmer, profile)
+
+        max_prob_key= max(probabilities.iteritems(), key=operator.itemgetter(1))[0]
+        current_motif.insert(random_num, max_prob_key)
+        if score(current_motif) < score(best_motifs):
+            best_motifs= current_motif
+        count += 1
+
+    return best_motifs
+
+'''
+This function takes a string, gets all the Kmers from it and calculates the probability of each of them. These probabilities are then Normalized. Finally a random string is picked out of this set, using the Weighted Die function defined below.
+'''
+def profile_generated_string(genome, profile, kmer_length):
+    len_genome= len(genome)
+    probabilities= {}
+    all_kmers= find_kmers_in_genome(genome, kmer_length)
+    for kmer in all_kmers:
+        probabilities[kmer]= get_probability_motif(kmer, profile)
+
+    probabilities= normalize(probabilities)
+    key= weighted_die(probabilities)
+    return key
+
+'''
+This is also a utility function that takes a dictionary as input with pre-normalized values. Now you generate a random floating point number which is basically a probability. Look at what value in the dictionary it is closest to, and return that key.
+'''
+def weighted_die(current_probabilities):
+    total= 0
+    result= {}
+    die_throw= random.uniform(0,1)
+    for key, value in current_probabilities.items():
+        total += value
+        result[key]= total
+
+    for key, value in result.items():
+        if die_throw < value:
+            return key
+        else:
+            continue
+
+'''
+This is a little utility function that takes a dictionary of nucleotide probabilities that do not add up to 1. It converts them into an output dictionary where they do add up to 1. This is needed to later implement Gibbs Sampling.
+'''
+def normalize(current_probabilities):
+    total= sum(current_probabilities.values())
+    normalized_prob= {nucleotide:probability/total for nucleotide, probability in current_probabilities.items()}
+    return normalized_prob
+
 '''
 This uses the 2 functions below to try and choose the best motif for each DNA string. It then uses this list as an input to the profile function and calculates its profile. Then it uses this profile to find the most probable kmers. It scores this new list against the best motif list we chose at the start. The moment the new list has a worse score than the previous list, we stop the search. If we don't the program will never end. 
 '''
