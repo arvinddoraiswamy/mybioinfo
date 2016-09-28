@@ -1,6 +1,3 @@
-Write one single tool that will attempt to do a lot of fancy things and find ori in the system.
------------------------------------------------------------------------------------------------
-
 https://research.cip.cgiar.org/confluence/display/potatogene/What+is+DNA,+a+gene,+a+chromosome+and+a+genome
     Cell: The smallest unit of the human body that keeps us all alive.
     DNA: One of the smallest bits (molecules) that are part of the genetic material of every cell of every organism, plant, animal or human.
@@ -74,3 +71,42 @@ More details about the 2 halves of a DNA strand
     - The place where G-C is the smallest is the approximate location of ori
     - Now you identify all 9mers in and around that window along with its reverse complements. This is so you can find the actual DNAa box (exact pattern) that triggers the replication. Even if there's slight differences (1 nucleotide) in patterns, that's fine, it could still be the correct pattern since imperfect matches are alsopossible.
     - Sometimes you can find lots of kmers that all have multiple matches and any of these could be ORIs. But this is still better than the brute force approach that biologists would have to perform without if they did not have programs to help them identify at least a set of ORIs. At this point biologists can go back to hte brute force approach of cutting off the genome at each of the set of the ORIs that the programmers identified.
+
+-----
+Week 3 onwards
+
+- Circadian rhythms are what make plants work. If they didn't know for example, when the sun shone or set they would not be able to live. There are genes in plants that do this monitoring, just 3 apparently (CCA1,LOC and TOC1). Its the same deal with humans except that there are probably different, many more such monitoring genes for implementing various functionality in our bodies. And with bacteria or viruses I guess, which replicate when there is a certain environment in the body. So its important to find these genes and where they are in the entire string of DNA.
+
+- These monitors then decide which behavior they want to control. Say wake the plant up every morning, for example. They then bind or attach themselves to a region very close to that gene. How does it know where to bind for which gene though? Some hidden region?
+
+- A string that is 15 chars long with 4 mutations (for eg) is implanted into all the DNA strings that are being searched. Meaning, you take a plant cell and get its DNA and search for a place in all the samples you choose, where there is this common monitoring protein. It isn't going to be exactly the same in all samples, else we could just search for common patterns across samples. So we need a way to search across samples, despite no exact matches or even having NO matches in some samples. Which is where we try and search for approximate matches and score these, the one with the "best" score is probably the monitor_per_random_sample.
+
+- The point then is, that in real life, biologists will only have a number of Dna strings and want to find out where the monitoring/controlling gene, which is the target motif, has attached itself to each string. Its not going to be in the same position or be similar in content. Which is why, an algorithm is needed to do this. Before the actual implementation of the algorithm, many smaller functions were written which eventually helped in the actual algorithm. 
+    1. Given a string of motifs extracted from a gene identify the number of A,G,C,T in each column and generate a matrix with those numbers as a dictionary of lists. Each entry in the list is a column.
+    2. Given a count matrix, find out how much A,C,G and T occur in each column. Each column must add up to 1. So, if there are 4 rows and 2 had A, A=0.5. This is called a profile matrix.
+    3. Which of A,C,G or T appeared the most in each column? Extract just that one nucleotide from each column. Join them all to get one of the
+most likely consensuses. It is possible that there are multiple valid answers here if 2 nucleotides in a column have the same count.
+    4. The consensus gives you the most_likely nucleotide per column. This function looks down the rest of the column and identifies the entries that do not match. This is repeated for_all_columns and for_all_genes, incrementing the score for each non match.
+    5. Given a profile and a target motif what is the probability that this motif is the one that actually exists in a genome.
+    6. Given a list of genomes, kmer length and a profile, identify what the most likely motif is. In other words, you calculate a number of probabilities and choose the one with the highest value.
+    7. The basic idea of the greedy search is that you want to find a series of motifs (1 per string of DNA) that resembles all the others. Use the first motif as the fixed set. For each kmer in the first motif, go through all the other kmers in all the other DNA strings and find 1 string that matches the first one the most. Once you finish going through all the DNA strings, score the entire set. Now go to the next kmer in the first set and repeat this process. Compare the score of all the sets at the end. The "set" with the best score wins. Meaning, for each string of DNA that string was the most likely to be the motif.
+-----
+Week 4
+
+- The above algorithm apparently works well (not yet figured out why :D) but it does. But its still not the best and hence the search continues to keep optimizing these algorithms. The base problem remains the same, to somehow figure out the target motif in each of the thousands of DNA strings biologists use.
+- Here are another set of functions that were then written, leading up to Gibbs search, another algorithm that performs even better than greedy search.
+  For Greedy Search with Pseudocounts:
+    1. Same as count matrix but handling any cells with 0 differently, because they skew the final result badly. If any of the cells in the count matrix have a 0 in them, then any guessed motifs despite being really close could get rejected. So we increment each cell by 1 so nothing is ever 0.
+    2. The new profile matrix needs to be generated from the pseudocount matrix. Ensure that you calculate the correct per_column_totals before calculating profiles. The sum total of each column must always be 1, remember - hence the adjustment.
+    3. The basic idea of the greedy search is that you want to find a series of motifs (1 per string of DNA) that resembles all the others. Use the first motif as the fixed set. For each kmer in the first motif, go through all the other kmers in all the other DNA strings and find 1 string that matches the first one the most. Once you finish going through all the DNA strings, score the entire set. Now go to the next kmer in the first set and repeat this process. Compare the score of all the sets at the end. The "set" with the best score wins. Meaning, for each string of DNA that string was the most likely to be the motif.
+
+ For Randomized Search:
+    4. Given a preset profile and a bunch of Dna strings we start building towards implementing the RandomizedSearchAlgorithm.
+    5. Given a set of DNA strings and a kmer length, choose a random string of length kmer_length from each of the strings and store those
+    6. This uses the 2 functions below to try and choose the best motif for each DNA string. It then uses this list as an input to the profile function and calculates its profile. Then it uses this profile to find the most probable kmers. It scores this new list against the best motif list we chose at the start. The moment the new list has a worse score than the previous list, we stop the search. If we don't the program will never end. 
+
+ For Gibbs:
+    7. This is a little utility function that takes a dictionary of nucleotide probabilities that do not add up to 1. It converts them into an output dictionary where they do add up to 1. This is needed to later implement Gibbs Sampling.
+    8. This is also a utility function that takes a dictionary as input with pre-normalized values. Now you generate a random floating point number which is basically a probability. Look at what value in the dictionary it is closest to, and return that key.
+    9. This function takes a string, gets all the Kmers from it and calculates the probability of each of them. These probabilities are then Normalized. Finally a random string is picked out of this set, using the Weighted Die function defined below.
+    10. This is the main algorithm that searches for a motif using the Gibbs Sampling method. It uses all the other functions developed during Week4 as under.

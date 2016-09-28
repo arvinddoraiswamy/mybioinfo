@@ -174,7 +174,7 @@ def generate_profile_matrix_with_pseudocounts(motifs):
     return profile
 
 '''
-If any of the cells in the count matrix have a 0 in them, then any guessed motifs despite being really close could get rejected. So we increment each cell by 1 so nothing is ever 0.
+Same as count matrix but handling any cells with 0 differently, because they skew the final result badly. If any of the cells in the count matrix have a 0 in them, then any guessed motifs despite being really close could get rejected. So we increment each cell by 1 so nothing is ever 0.
 '''
 def generate_count_matrix_with_pseudocounts(motifs):
     symbols=['A','C','G','T']
@@ -295,8 +295,7 @@ def get_probability_motif(target_motif, profile):
     return final_value
 
 '''
-Given a list of genomes, kmer length and a profile, identify what the most likely motif is. In other words, you calculate a number of
-probabilities and choose the one with the highest value.
+Given a list of genomes, kmer length and a profile, identify what the most likely motif is. In other words, you calculate a number of probabilities and choose the one with the highest value.
 '''
 def get_most_probable_motif(genome, kmer_length, profile):
     all_kmers= find_kmers_in_genome(genome, kmer_length)
